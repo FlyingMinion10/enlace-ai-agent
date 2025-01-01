@@ -19,6 +19,7 @@
     "node-telegram-bot-api": "^0.66.0",
     "openai": "^4.76.3",
     "pg": "^8.13.1",
-    "punycode": "^2.3.1"
+    "punycode": "^2.3.1",
+    "twilio": "^5.4.0"
   }
 }

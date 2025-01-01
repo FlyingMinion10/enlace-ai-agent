@@ -10,7 +10,7 @@ require("dotenv").config();
 
 // Importar variables de entorno
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID_REST;
+const OPENAI_ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID_ENLACE;
 
 
 // Importar texto de instrucciones

@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const twilio = require('twilio');
 
 // Configura tu token de Telegram Bot y API de OpenAI
-const BOT_TOKEN = process.env.BOT_TOKEN_REST;
+const BOT_TOKEN = process.env.BOT_TOKEN_SALES;
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 // Credenciales de Twilio
