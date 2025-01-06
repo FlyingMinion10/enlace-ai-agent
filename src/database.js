@@ -24,6 +24,7 @@ const getThread = async (userId) => {
     } else {
         return null; // Retorna null si no existe
     }
+    
 
   } catch (error) {
         console.error("Error gestionando el thread (getThread):", error);
