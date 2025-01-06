@@ -2,7 +2,6 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
-
 // Configurar conexión con PostgreSQL
 const pool = new Pool({
     user: process.env.PG_USER,
@@ -12,31 +11,51 @@ const pool = new Pool({
     port: process.env.PG_PORT,
 });
 
-// Función para obtener o crear un thread
-const getThread = async (userId) => {
-  const client = await pool.connect();
-
-  try {
-    // Buscar thread existente
-    const result = await client.query("SELECT thread_id FROM node_threads WHERE user_id = $1", [userId]);
-    if (result.rows.length > 0) {
-        return result.rows[0].thread_id; // Retorna el thread_id existente
-    } else {
-        return null; // Retorna null si no existe
-    }
-    
-
-  } catch (error) {
-        console.error("Error gestionando el thread (getThread):", error);
+// Función para crear la tabla si no existe
+const createTableIfNotExists = async () => {
+    const client = await pool.connect();
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS node_threads (
+                user_id VARCHAR(255) NOT NULL,
+                thread_id VARCHAR(255) NOT NULL,
+                PRIMARY KEY (user_id, thread_id)
+            )
+        `);
+    } catch (error) {
+        console.error("Error creando la tabla (createTableIfNotExists):", error);
         throw error;
-
-  } finally {
+    } finally {
         client.release();
-  }
+    }
 };
 
 // Función para obtener o crear un thread
+const getThread = async (userId) => {
+    await createTableIfNotExists(); // Asegurarse de que la tabla exista
+    const client = await pool.connect();
+
+    try {
+        // Buscar thread existente
+        const result = await client.query("SELECT thread_id FROM node_threads WHERE user_id = $1", [userId]);
+        if (result.rows.length > 0) {
+            return result.rows[0].thread_id; // Retorna el thread_id existente
+        } else {
+            return null; // Retorna null si no existe
+        }
+
+    } catch (error) {
+        console.error("Error gestionando el thread (getThread):", error);
+        throw error;
+
+    } finally {
+        client.release();
+    }
+};
+
+// Función para registrar un thread
 const registerThread = async (userId, threadId) => {
+    await createTableIfNotExists(); // Asegurarse de que la tabla exista
     const client = await pool.connect();
     try {
         // Almacena el nuevo thread en la base de datos
@@ -52,5 +71,5 @@ const registerThread = async (userId, threadId) => {
     }
 };
 
-// Exportar la funcion
+// Exportar las funciones
 module.exports = { getThread, registerThread };
