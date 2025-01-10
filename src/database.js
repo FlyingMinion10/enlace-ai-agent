@@ -2,6 +2,9 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
+// Variables
+const table_name = "node_threads_enlace";
+
 // Configurar conexión con PostgreSQL
 const pool = new Pool({
     user: process.env.PG_USER,
@@ -16,7 +19,7 @@ const createTableIfNotExists = async () => {
     const client = await pool.connect();
     try {
         await client.query(`
-            CREATE TABLE IF NOT EXISTS node_threads (
+            CREATE TABLE IF NOT EXISTS ${table_name} (
                 user_id VARCHAR(255) NOT NULL,
                 thread_id VARCHAR(255) NOT NULL,
                 PRIMARY KEY (user_id, thread_id)
@@ -37,7 +40,7 @@ const getThread = async (userId) => {
 
     try {
         // Buscar thread existente
-        const result = await client.query("SELECT thread_id FROM node_threads WHERE user_id = $1", [userId]);
+        const result = await client.query(`SELECT thread_id FROM ${table_name} WHERE user_id = $1`, [userId]);
         if (result.rows.length > 0) {
             return result.rows[0].thread_id; // Retorna el thread_id existente
         } else {
@@ -59,7 +62,7 @@ const registerThread = async (userId, threadId) => {
     const client = await pool.connect();
     try {
         // Almacena el nuevo thread en la base de datos
-        await client.query("INSERT INTO node_threads (user_id, thread_id) VALUES ($1, $2)", [userId, threadId]);
+        await client.query(`INSERT INTO ${table_name} (user_id, thread_id) VALUES ($1, $2)`, [userId, threadId]);
         return true; // Retorna el nuevo thread_id
 
     } catch (error) {
